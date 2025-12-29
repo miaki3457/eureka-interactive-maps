@@ -15,7 +15,7 @@
         <item-information v-if="clickedItem !== false" :position="clickPosition" @closeItemInformation="closeItemInformation">
             <template v-slot:icon><div v-html="clickedItemIcon"></div></template>
             <template v-slot:header>
-                {{clickedItemLabel}}
+                {{ translate(clickedItemLabel) }}
             </template>
             <template v-slot:content>
                 <component :is="clickedItemComponent" :item="clickedItemSourceItem" v-bind="itemComponentProps"></component>
@@ -35,6 +35,10 @@
     import SkirmishesItemInformation from './ItemInformation/SkirmishesItemInformation'
     import CriticalEngagementsItemInformation from './ItemInformation/CriticalEngagementsItemInformation'
 
+    // --- 注入漢化邏輯 ---
+    import nameMapping from '@/i18n/mapping.json'
+    import i18n from '@/i18n/config'
+
     export default {
         name: 'viewer',
         components: {
@@ -49,34 +53,13 @@
             EurekaCanvas
         },
         props:{
-            imageSource: {
-                type: String,
-                required: true
-            },
-            jsonData: {
-                type: Object,
-                required: true
-            },
-            pFilters: {
-                type: Object,
-                required: true
-            },
-            mapName: {
-                type: String,
-                required: true
-            },
-            gridSizeInPixels: {
-                type: Number,
-                default: 100
-            },
-            coordinatesOffset: {
-                type: Number,
-                default: 0
-            },
-            maximumZoom: {
-                type: Number,
-                default: 100
-            }
+            imageSource: { type: String, required: true },
+            jsonData: { type: Object, required: true },
+            pFilters: { type: Object, required: true },
+            mapName: { type: String, required: true },
+            gridSizeInPixels: { type: Number, default: 100 },
+            coordinatesOffset: { type: Number, default: 0 },
+            maximumZoom: { type: Number, default: 100 }
         },
         data() {
             return {
@@ -104,19 +87,14 @@
         },
         computed: {
             clickedItemSourceItem() {
-                if (this.clickedItem === false) {
-                    return false
-                }
+                if (this.clickedItem === false) { return false }
                 return this.jsonData[this.clickedItem.key].items.find((item) => {
                     return item.id == this.clickedItem.id
                 })
             },
             clickedItemIcon() {
-                if (this.clickedItem === false) {
-                    return ''
-                }
+                if (this.clickedItem === false) { return '' }
                 let icons = ''
-
                 switch (this.clickedItem.key) {
                     case 'fates':
                         icons = `<img title="FATE" src="${this.icons.fate.path}" />`
@@ -135,15 +113,9 @@
                         break
                     case 'monsters':
                         icons += `<img src="${this.clickedItemSourceItem.element === '' ? this.icons['noelement'].path : this.icons[this.clickedItemSourceItem.element].path}" />`
-                        if (this.clickedItemSourceItem.ashkin) {
-                            icons += `<img title="Ashkin" src="${this.icons.ashkin.path}" />`
-                        }
-                        if (this.clickedItemSourceItem.mutation.canMutate) {
-                            icons += `<img title="Mutates" src="${this.icons.mutation.path}" />`
-                        }
-                        if (this.clickedItemSourceItem.adaptation.canAdapt) {
-                            icons += `<img title="Adapts" src="${this.icons.adaptation.path}" />`
-                        }
+                        if (this.clickedItemSourceItem.ashkin) { icons += `<img title="Ashkin" src="${this.icons.ashkin.path}" />` }
+                        if (this.clickedItemSourceItem.mutation.canMutate) { icons += `<img title="Mutates" src="${this.icons.mutation.path}" />` }
+                        if (this.clickedItemSourceItem.adaptation.canAdapt) { icons += `<img title="Adapts" src="${this.icons.adaptation.path}" />` }
                         break
                     case 'enemies': {
                         let rank = this.clickedItemSourceItem.level
@@ -168,17 +140,14 @@
                         icons = `<img title="Unknown" src="${this.icons.noelement.path}" />`
                         break
                 }
-
                 return icons
             },
             clickedItemLabel() {
-                if (this.clickedItem === false) {
-                    return ''
-                }
+                if (this.clickedItem === false) { return '' }
                 let label = ''
                 switch (this.clickedItem.key) {
                     case 'elementals':
-                        label = `Eurekan Elementals`
+                        label = `Eureka Elementals`
                         break
                     case 'lockboxes':
                         label = `Bunny Lockboxes`
@@ -187,53 +156,28 @@
                         label = this.clickedItemSourceItem.name
                         break
                 }
-
-                return label
+                // 返回前統一過一次翻譯
+                return this.translate(label)
             },
             clickedItemComponent() {
-                if (this.clickedItem === false) {
-                    return ''
-                }
+                if (this.clickedItem === false) { return '' }
                 let component = ''
                 switch (this.clickedItem.key) {
-                    case 'monsters':
-                        component = 'MonsterItemInformation'
-                        break
-                    case 'fates':
-                        component = 'FateItemInformation'
-                        break
-                    case 'enemies':
-                        component = 'EnemyItemInformation'
-                        break
-                    case 'skirmishes':
-                        component = 'SkirmishesItemInformation'
-                        break
-                    case 'engagements':
-                        component = 'CriticalEngagementsItemInformation'
-                        break
-                    default:
-                        component = 'DefaultItemInformation'
-                        break
+                    case 'monsters': component = 'MonsterItemInformation'; break
+                    case 'fates': component = 'FateItemInformation'; break
+                    case 'enemies': component = 'EnemyItemInformation'; break
+                    case 'skirmishes': component = 'SkirmishesItemInformation'; break
+                    case 'engagements': component = 'CriticalEngagementsItemInformation'; break
+                    default: component = 'DefaultItemInformation'; break
                 }
-
                 return component
             },
             itemComponentProps() {
-                if (this.clickedItem === false) {
-                    return {}
-                }
+                if (this.clickedItem === false) { return {} }
                 let props = {}
                 switch (this.clickedItem.key) {
-                    case 'monsters':
-                        props = {
-                            fates: this.jsonData.fates.items
-                        }
-                        break
-                    case 'fates':
-                        props = {
-                            monsters: this.jsonData.monsters.items
-                        }
-                        break
+                    case 'monsters': props = { fates: this.jsonData.fates.items }; break
+                    case 'fates': props = { monsters: this.jsonData.monsters.items }; break
                     case 'skirmishes':
                     case 'engagements':
                     case 'enemies':
@@ -243,7 +187,6 @@
                         }
                         break
                 }
-
                 return props
             },
             positions() {
@@ -264,12 +207,12 @@
                                     let itemObj = {
                                         id: item.id,
                                         key: key,
-                                        label: item.name,
+                                        // --- 修改處：翻譯標點名稱 ---
+                                        label: this.translate(item.name),
                                         coordinates: coordinates,
                                         icons: []
                                     }
 
-                                    // i'll turn this into a more fancy thing later
                                     switch (key) {
                                         case 'monsters':
                                             if (item.element == "" && this.icons.hasOwnProperty('noelement')) {
@@ -277,7 +220,8 @@
                                             } else if (this.icons.hasOwnProperty(item.element)) {
                                                 itemObj.icons.push({ image: this.icons[item.element].image })
                                             }
-                                            itemObj.label = `${item.name} (${item.level})`
+                                            // --- 修改處：翻譯怪物名稱與等級格式 ---
+                                            itemObj.label = `${this.translate(item.name)} (${item.level})`
                                             break;
                                         case 'fates':
                                             itemObj.icons.push({ image: this.icons.fate.image })
@@ -344,258 +288,105 @@
             },
         },
         methods: {
-            closeItemInformation() {
-                this.clickedItem = false
+            // --- 漢化核心函式 ---
+            translate(text) {
+                if (!text) return '';
+                // 檢查是否處於中文模式（基於 i18next 狀態）
+                if (i18n.language.startsWith('zh')) {
+                    return nameMapping[text] || text;
+                }
+                return text;
             },
-            clickedCanvas() {
-                this.clickedItem = false
-            },
-            clickedElement(item) {
-                this.clickedItem = item
-            },
-            updateFilters(filters) {
-                this.cFilters = filters
-            },
-            resetFilters() {
-                this.cFilters = JSON.parse(JSON.stringify(this.pFilters))
-            },
+            closeItemInformation() { this.clickedItem = false },
+            clickedCanvas() { this.clickedItem = false },
+            clickedElement(item) { this.clickedItem = item },
+            updateFilters(filters) { this.cFilters = filters },
+            resetFilters() { this.cFilters = JSON.parse(JSON.stringify(this.pFilters)) },
             shouldFilterItem(key, item) {
                 const checks = []
                 if (this.cFilters.hasOwnProperty('level') && item.hasOwnProperty('level') && !(item.level >= this.cFilters.level.from && item.level <= this.cFilters.level.to)) {
                     checks.push(true)
                 }
-
                 if (this.cFilters.hasOwnProperty('element') && item.hasOwnProperty('element') && this.cFilters.element !== '' && item.element !== this.cFilters.element) {
                     checks.push(true)
                 }
-
                 if (this.cFilters.hasOwnProperty('drops') && item.hasOwnProperty('drops') && this.cFilters.drops.value != '') {
-                    if (!item.drops.find(drop => drop.name == this.cFilters.drops.value)) {
-                        checks.push(true)
-                    }
+                    if (!item.drops.find(drop => drop.name == this.cFilters.drops.value)) { checks.push(true) }
                 }
-
                 if (key === 'monsters') {
                     let sectionFilters = this.cFilters.sections.monsters.filters
-                    if (sectionFilters.ashkin && !item.ashkin) {
-                        checks.push(true)
-                    }
-
-                    if (sectionFilters.sprite && !item.name.includes('Sprite')) {
-                        checks.push(true)
-                    }
-
-                    if (sectionFilters.fate && !item.fate.forFate) {
-                        checks.push(true)
-                    }
-
-                    if (sectionFilters.aggro !== '' && item.aggro !== sectionFilters.aggro) {
-                        checks.push(true)
-                    }
-
-                    if (sectionFilters.mutates && !item.mutation.canMutate) {
-                        checks.push(true)
-                    }
-
-                    if (sectionFilters.adapts && !item.adaptation.canAdapt) {
-                        checks.push(true)
-                    }
-
+                    if (sectionFilters.ashkin && !item.ashkin) { checks.push(true) }
+                    if (sectionFilters.sprite && !item.name.includes('Sprite')) { checks.push(true) }
+                    if (sectionFilters.fate && !item.fate.forFate) { checks.push(true) }
+                    if (sectionFilters.aggro !== '' && item.aggro !== sectionFilters.aggro) { checks.push(true) }
+                    if (sectionFilters.mutates && !item.mutation.canMutate) { checks.push(true) }
+                    if (sectionFilters.adapts && !item.adaptation.canAdapt) { checks.push(true) }
                     if (sectionFilters.maweather !== '' && sectionFilters.matime !== '') {
-                        let adaptFound = item.adaptation.conditions.some(condition => {
-                            return condition.weather === sectionFilters.maweather && condition.time === sectionFilters.matime
-                        })
-                        let mutateFound = item.mutation.conditions.some(condition => {
-                            return condition.weather === sectionFilters.maweather && condition.time === sectionFilters.matime
-                        })
-
+                        let adaptFound = item.adaptation.conditions.some(condition => condition.weather === sectionFilters.maweather && condition.time === sectionFilters.matime)
+                        let mutateFound = item.mutation.conditions.some(condition => condition.weather === sectionFilters.maweather && condition.time === sectionFilters.matime)
                         checks.push(!(adaptFound || mutateFound))
-
                     } else if (sectionFilters.maweather !== '') {
-                        let adaptFound = item.adaptation.conditions.some(condition => {
-                            return condition.weather === sectionFilters.maweather
-                        })
-                        let mutateFound = item.mutation.conditions.some(condition => {
-                            return condition.weather === sectionFilters.maweather
-                        })
+                        let adaptFound = item.adaptation.conditions.some(condition => condition.weather === sectionFilters.maweather)
+                        let mutateFound = item.mutation.conditions.some(condition => condition.weather === sectionFilters.maweather)
                         checks.push(!(adaptFound || mutateFound))
                     } else if (sectionFilters.matime !== '') {
-                        let adaptFound = item.adaptation.conditions.some(condition => {
-                            return condition.time === sectionFilters.matime
-                        })
-                        let mutateFound = item.mutation.conditions.some(condition => {
-                            return condition.time === sectionFilters.matime
-                        })
-
+                        let adaptFound = item.adaptation.conditions.some(condition => condition.time === sectionFilters.matime)
+                        let mutateFound = item.mutation.conditions.some(condition => condition.time === sectionFilters.matime)
                         checks.push(!(adaptFound || mutateFound))
                     }
-
-                    if (sectionFilters.mutateElement !== '' && item.mutation.element !== sectionFilters.mutateElement) {
-                        checks.push(true)
-                    }
+                    if (sectionFilters.mutateElement !== '' && item.mutation.element !== sectionFilters.mutateElement) { checks.push(true) }
                 }
-
                 if (key === 'enemies') {
                     let sectionFilters = this.cFilters.sections.enemies.filters
-                    if (sectionFilters.hasOwnProperty('rank') && item.hasOwnProperty('level') && !sectionFilters.rank[item.level]) {
-                        checks.push(true)
-                    }
-
-                    if (item.hasOwnProperty('elemental') && item.elemental && !sectionFilters.elemental) {
-                        checks.push(true)
-                    }
-
-                    if (item.hasOwnProperty('ashkin') && item.ashkin && !sectionFilters.ashkin) {
-                        checks.push(true)
-                    }
-
-                    if (item.hasOwnProperty('fauna') && item.fauna && !sectionFilters.fauna) {
-                        checks.push(true)
-                    }
-
-                    if (item.hasOwnProperty('machine') && item.machine && !sectionFilters.machine) {
-                        checks.push(true)
-                    }
+                    if (sectionFilters.hasOwnProperty('rank') && item.hasOwnProperty('level') && !sectionFilters.rank[item.level]) { checks.push(true) }
+                    if (item.hasOwnProperty('elemental') && item.elemental && !sectionFilters.elemental) { checks.push(true) }
+                    if (item.hasOwnProperty('ashkin') && item.ashkin && !sectionFilters.ashkin) { checks.push(true) }
+                    if (item.hasOwnProperty('fauna') && item.fauna && !sectionFilters.fauna) { checks.push(true) }
+                    if (item.hasOwnProperty('machine') && item.machine && !sectionFilters.machine) { checks.push(true) }
                 }
-
                 if (key === 'engagements') {
                     let sectionFilters = this.cFilters.sections.engagements.filters
                     let participants = sectionFilters.participants.find(p => p.amount == item.participants)
-                    if (participants && !participants.enabled) {
-                        checks.push(true)
-                    }
-
-                    if (sectionFilters.hiddenEngagements.includes(item.id)) {
-                        checks.push(true)
-                    }
+                    if (participants && !participants.enabled) { checks.push(true) }
+                    if (sectionFilters.hiddenEngagements.includes(item.id)) { checks.push(true) }
                 }
-
                 if (key === 'skirmishes') {
                     let sectionFilters = this.cFilters.sections.skirmishes.filters
-
-                    if (sectionFilters.hiddenSkirmishes.includes(item.id)) {
-                        checks.push(true)
-                    }
+                    if (sectionFilters.hiddenSkirmishes.includes(item.id)) { checks.push(true) }
                 }
-
                 return [...new Set(checks)].filter(el => el).length === 1
             },
             async loadIcons() {
                 const icons = {
-                    noelement: {
-                        path: require('@/assets/images/icons/elements/noelement.png'),
-                        image: null
-                    },
-                    fire: {
-                        path: require('@/assets/images/icons/elements/fire2.png'),
-                        image: null
-                    },
-                    wind: {
-                        path: require('@/assets/images/icons/elements/wind2.png'),
-                        image: null
-                    },
-                    water: {
-                        path: require('@/assets/images/icons/elements/water2.png'),
-                        image: null
-                    },
-                    lightning: {
-                        path: require('@/assets/images/icons/elements/lightning2.png'),
-                        image: null
-                    },
-                    ice: {
-                        path: require('@/assets/images/icons/elements/ice2.png'),
-                        image: null
-                    },
-                    earth: {
-                        path: require('@/assets/images/icons/elements/earth2.png'),
-                        image: null
-                    },
-                    quest: {
-                        path: require('@/assets/images/icons/quest.png'),
-                        image: null
-                    },
-                    adaptation: {
-                        path: require('@/assets/images/icons/adaptation.png'),
-                        image: null
-                    },
-                    mutation: {
-                        path: require('@/assets/images/icons/mutation.png'),
-                        image: null
-                    },
-                    aetheryte: {
-                        path: require('@/assets/images/icons/aetheryte.png'),
-                        image: null
-                    },
-                    fate: {
-                        path: require('@/assets/images/icons/fate.png'),
-                        image: null
-                    },
-                    blessing: {
-                        path: require('@/assets/images/icons/blessing.png'),
-                        image: null
-                    },
-                    lock: {
-                        path: require('@/assets/images/icons/lock.png'),
-                        image: null
-                    },
-                    ashkin: {
-                        path: require('@/assets/images/icons/ashkin.png'),
-                        image: null
-                    },
-                    rank_0: {
-                        path: require('@/assets/images/icons/ranks/0.png'),
-                        image: null
-                    },
-                    rank_1: {
-                        path: require('@/assets/images/icons/ranks/1.png'),
-                        image: null
-                    },
-                    rank_2: {
-                        path: require('@/assets/images/icons/ranks/2.png'),
-                        image: null
-                    },
-                    rank_3: {
-                        path: require('@/assets/images/icons/ranks/3.png'),
-                        image: null
-                    },
-                    rank_4: {
-                        path: require('@/assets/images/icons/ranks/4.png'),
-                        image: null
-                    },
-                    rank_5: {
-                        path: require('@/assets/images/icons/ranks/5.png'),
-                        image: null
-                    },
-                    engagements_boss: {
-                        path: require('@/assets/images/icons/engagements/boss.png'),
-                        image: null
-                    },
-                    engagements_duel: {
-                        path: require('@/assets/images/icons/engagements/duel.png'),
-                        image: null
-                    },
-                    skirmishes_boss: {
-                        path: require('@/assets/images/icons/skirmishes/boss.png'),
-                        image: null
-                    },
-                    skirmishes_defend: {
-                        path: require('@/assets/images/icons/skirmishes/defend.png'),
-                        image: null
-                    },
-                    skirmishes_gather: {
-                        path: require('@/assets/images/icons/skirmishes/gather.png'),
-                        image: null
-                    },
-                    skirmishes_slay: {
-                        path: require('@/assets/images/icons/skirmishes/slay.png'),
-                        image: null
-                    }
+                    noelement: { path: require('@/assets/images/icons/elements/noelement.png'), image: null },
+                    fire: { path: require('@/assets/images/icons/elements/fire2.png'), image: null },
+                    wind: { path: require('@/assets/images/icons/elements/wind2.png'), image: null },
+                    water: { path: require('@/assets/images/icons/elements/water2.png'), image: null },
+                    lightning: { path: require('@/assets/images/icons/elements/lightning2.png'), image: null },
+                    ice: { path: require('@/assets/images/icons/elements/ice2.png'), image: null },
+                    earth: { path: require('@/assets/images/icons/elements/earth2.png'), image: null },
+                    quest: { path: require('@/assets/images/icons/quest.png'), image: null },
+                    adaptation: { path: require('@/assets/images/icons/adaptation.png'), image: null },
+                    mutation: { path: require('@/assets/images/icons/mutation.png'), image: null },
+                    aetheryte: { path: require('@/assets/images/icons/aetheryte.png'), image: null },
+                    fate: { path: require('@/assets/images/icons/fate.png'), image: null },
+                    blessing: { path: require('@/assets/images/icons/blessing.png'), image: null },
+                    lock: { path: require('@/assets/images/icons/lock.png'), image: null },
+                    ashkin: { path: require('@/assets/images/icons/ashkin.png'), image: null },
+                    rank_0: { path: require('@/assets/images/icons/ranks/0.png'), image: null },
+                    rank_1: { path: require('@/assets/images/icons/ranks/1.png'), image: null },
+                    rank_2: { path: require('@/assets/images/icons/ranks/2.png'), image: null },
+                    rank_3: { path: require('@/assets/images/icons/ranks/3.png'), image: null },
+                    rank_4: { path: require('@/assets/images/icons/ranks/4.png'), image: null },
+                    rank_5: { path: require('@/assets/images/icons/ranks/5.png'), image: null },
+                    engagements_boss: { path: require('@/assets/images/icons/engagements/boss.png'), image: null },
+                    engagements_duel: { path: require('@/assets/images/icons/engagements/duel.png'), image: null },
+                    skirmishes_boss: { path: require('@/assets/images/icons/skirmishes/boss.png'), image: null },
+                    skirmishes_defend: { path: require('@/assets/images/icons/skirmishes/defend.png'), image: null },
+                    skirmishes_gather: { path: require('@/assets/images/icons/skirmishes/gather.png'), image: null },
+                    skirmishes_slay: { path: require('@/assets/images/icons/skirmishes/slay.png'), image: null }
                 }
-
                 await Object.keys(icons).reduce(async (promise, iconKey) => {
-                    // This line will wait for the last async function to finish.
-                    // The first iteration uses an already resolved Promise
-                    // so, it will immediately continue.
                     await promise;
                     icons[iconKey].image = await this.loadImage(icons[iconKey].path)
                 }, Promise.resolve());

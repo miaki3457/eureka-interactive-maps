@@ -6,7 +6,7 @@
                     title="Show/Hide this section from the map" class="mr-2" />
             </div>
             <div>
-                <label class="font-bold mr-1" :for="viewInputId">{{ section.name }}</label>
+                <label class="font-bold mr-1" :for="viewInputId">{{ translate(section.name) }}</label>
             </div>
             <div v-if="showExpanded" class="ml-auto">
                 <span v-show="expanded" @click="toggleExpanded">
@@ -25,6 +25,10 @@
     import Enemies from './SectionItems/Enemies'
     import CriticalEngagements from './SectionItems/CriticalEngagements'
     import Skirmishes from './SectionItems/Skirmishes'
+
+    // --- 注入漢化邏輯 ---
+    import nameMapping from '@/i18n/mapping.json'
+    import i18n from '@/i18n/config'
 
     export default {
         name: 'filter-section',
@@ -79,6 +83,14 @@
             }
         },
         methods: {
+            // --- 漢化核心函式 ---
+            translate(text) {
+                if (!text) return '';
+                if (i18n.language.startsWith('zh')) {
+                    return nameMapping[text] || text;
+                }
+                return text;
+            },
             toggleExpanded() {
                 this.expanded = !this.expanded
             },
