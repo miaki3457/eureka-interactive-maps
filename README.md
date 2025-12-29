@@ -1,6 +1,6 @@
 # FFXIV Interactive Eureka Maps (Multi-language Support)
 
-[🚀 點此開啟地圖網站](https://miaki3457.github.io/eureka-interactive-maps/)
+## [🚀 點此開啟地圖網站](https://miaki3457.github.io/eureka-interactive-maps/)
 
 這是一個針對《最終幻想XIV》（Final Fantasy XIV）中禁地優雷卡（Anemos, Pagos, Pyros, Hydatos）與博茲雅設計的互動式地圖。本專案目前已支援**繁體中文**與**英文**切換。
 
@@ -14,9 +14,9 @@
 
 ## 🛠 如何協助翻譯 (How to Contribute)
 
-如果你想協助翻譯或修正地圖資訊，請參考以下步驟：
+### 如果你想協助翻譯或修正地圖資訊，請參考以下步驟：
 
-語系對應檔案位於 src/i18n/mapping.json。如果你發現翻譯錯誤或缺漏：
+- **語系對應檔案位於 src/i18n/mapping.json。如果你發現翻譯錯誤或缺漏：**
 1. Fork 本專案。
 2. 找到 src/i18n/mapping.json。
 3. 修改對應的中文。
