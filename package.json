@@ -13,7 +13,7 @@
     "@fortawesome/vue-fontawesome": "^0.1.10",
     "core-js": "^3.18.0",
     "eureka-canvas": "^0.8.0",
-    "i18next": "^21.10.0",
+    "i18next": "^25.7.3",
     "i18next-browser-languagedetector": "^6.1.8",
     "react-i18next": "^16.5.0",
     "regenerator-runtime": "^0.14.1",
