@@ -1,12 +1,11 @@
 import i18next from 'i18next'
 
+const savedLanguage = localStorage.getItem('i18nextLng') || 'en';
+
 i18next.init({
-  // 優先從 localStorage 讀取語言，如果沒有則預設為 'en'
-  lng: localStorage.getItem('i18nextLng') || 'en', 
-  debug: false,
-  resources: {
-    
-  }
+  lng: savedLanguage, 
+  fallbackLng: 'en',
+  debug: false
 })
 
 export default i18next
