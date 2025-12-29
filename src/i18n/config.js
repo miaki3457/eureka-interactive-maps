@@ -1,11 +1,16 @@
 import i18next from 'i18next'
 
-const savedLanguage = localStorage.getItem('i18nextLng') || 'en';
+// 強制在初始化前抓取 localStorage
+const savedLng = localStorage.getItem('i18nextLng') || 'en';
 
 i18next.init({
-  lng: savedLanguage, 
+  lng: savedLng, 
   fallbackLng: 'en',
-  debug: false
+  debug: false,
+  detection: {
+    order: ['localStorage', 'cookie'],
+    caches: ['localStorage']
+  }
 })
 
 export default i18next
