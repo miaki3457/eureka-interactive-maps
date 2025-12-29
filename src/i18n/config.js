@@ -1,15 +1,11 @@
 import i18next from 'i18next'
 
-// 強制在初始化前抓取 localStorage
-const savedLng = localStorage.getItem('i18nextLng') || 'en';
-
 i18next.init({
-  lng: savedLng, 
-  fallbackLng: 'en',
+  // 優先從 localStorage 讀取語言，如果沒有則預設為 'en'
+  lng: localStorage.getItem('i18nextLng') || 'en', 
   debug: false,
-  detection: {
-    order: ['localStorage', 'cookie'],
-    caches: ['localStorage']
+  resources: {
+    
   }
 })
 
