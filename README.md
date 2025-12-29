@@ -22,11 +22,7 @@
 3. 修改對應的中文。
 4. 發起 Pull Request (PR)。
 
-## 🚀 自動化部署說明
-本專案使用 GitHub Actions 進行持續整合與部署：
-觸發條件：推送到 master 分支。
-部署分支：gh-pages。
-環境要求：Node.js v17+ 環境編譯時需設定 NODE_OPTIONS=--openssl-legacy-provider。
+
 
 ## 原始專案參考
 本專案基於 [FFXIV Interactive Eureka Maps](https://github.com/Kassanu/eureka-interactive-maps/) 進行二次開發與語系擴充。
